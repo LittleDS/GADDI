@@ -3,6 +3,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Vector;
 
@@ -114,25 +115,21 @@ public class GADDI {
 	}
 
 	void shrinkCand( int qIdx, int dbIdx) {
-	    set < int > :: iterator it;
-	    HashSet<Integer> qLabelSet;
-	    multimap < int, int > qNDSmap;
-	    multimap < int, int > :: iterator it1;
-	    int label;
-	    int cnt;
-	    bool isObserv2Satisfied;
-	    it = mCandSet.begin();
+	    HashMap<String, List<Integer>> qNDSmap = new HashMap<String ,List<Integer>>();
+	    String label = "";
+	    int cnt = 0;
+	    boolean isObserv2Satisfied = false;
 	    int longestDist = mpqSt.maxShortestDistances[qIdx];
-	    mDelSet.insert(dbIdx);
-	    mCandSet.erase(dbIdx);
-	    while( it != mCandSet.end() ) {
-	        if ( mpdbSt.GraphShortestMatrix[dbIdx][*it] > longestDist ) {
-	            set < int > :: iterator _it = it;
-	            it++;
-	            mDelSet.insert(*_it);
-	            mCandSet.erase(_it);
-	        } else {
-	            it++;
+	    mDelSet.add(dbIdx);
+	    mCandSet.remove(dbIdx);
+	    
+	    Iterator<Integer> it = mCandSet.iterator();
+	    
+	    while (it.hasNext()) {
+	    	Integer i = it.next();
+	        if ( mpdbSt.GraphShortestMatrix[dbIdx][i] > longestDist ) {
+	            mDelSet.add(i);
+	            it.remove();
 	        }
 	    }
 	    
@@ -140,7 +137,10 @@ public class GADDI {
 	        if ( i != qIdx ) {
 	            label = mpqSt.NodeLabel[i];
 	            cnt = mpqSt.ndsMatrixTri[qIdx][i];
-	            qNDSmap.insert(pair<int, int>(label,cnt));
+	            if (!qNDSmap.containsKey(label)) {
+	            	qNDSmap.put(label, new LinkedList<Integer>());	            	
+	            }
+            	qNDSmap.get(label).add(cnt);
 	        }
 	    }
 	    
@@ -149,16 +149,18 @@ public class GADDI {
 	            isObserv2Satisfied = false;
 	            label = mpdbSt.NodeLabel[i];
 	            cnt  = mpdbSt.ndsMatrixTri[dbIdx][i];
-	            multimap<int,int>::iterator lowit=qNDSmap.lower_bound(label);
-	            multimap<int,int>::iterator upit=qNDSmap.upper_bound(label);
-	            for ( it1 = lowit; it1 != upit; it1++ ) {
-	                if ( it1->second <= cnt ) {
-	                    isObserv2Satisfied = true;
-	                }
+	            
+	            if (qNDSmap.containsKey(label)) {
+	            	for (Integer j : qNDSmap.get(label)) {
+	            		if (j <= cnt ) {
+	                    	isObserv2Satisfied = true;
+	                	}
+	            	}
 	            }
+	            
 	            if ( false == isObserv2Satisfied ) {
-	                mCandSet.erase(i);
-	                mDelSet.insert(i);
+	                mCandSet.remove(i);
+	                mDelSet.add(i);
 	            }
 	        }
 	    }
@@ -184,7 +186,6 @@ public class GADDI {
 
 	boolean isSameLabelAdjacency (int qIdx, int dbIdx) {
 	    String qLabel, dbLabel;
-	    //map < int, int > :: iterator it;
 	    qLabel = mpqSt.NodeLabel[qIdx];
 	    dbLabel = mpdbSt.NodeLabel[dbIdx];
 	    if ( qLabel.equals(dbLabel)) {
@@ -224,10 +225,10 @@ public class GADDI {
 	    multimap < int, int > :: iterator it;
 	    multimap < int, int > :: iterator dbit;
 	    bool flag;
-	    for ( int i = 0; i < mpqSt->SizeofNode; i++ ) {
-	        if ( NOEDGE != mpqSt->GraphMatrix[qIdx][i] ) {
-	            cnt = mpqSt->ndsMatrixTri[qIdx][i];
-	            label = mpqSt->NodeLabel[i];
+	    for ( int i = 0; i < mpqSt.SizeofNode; i++ ) {
+	        if ( NOEDGE != mpqSt.GraphMatrix[qIdx][i] ) {
+	            cnt = mpqSt.ndsMatrixTri[qIdx][i];
+	            label = mpqSt.NodeLabel[i];
 	            it = qMulMap.find ( label );
 	            if ( qMulMap.end() == it ) {
 	                qMulMap.insert(pair<int, int> ( label, cnt ) );
