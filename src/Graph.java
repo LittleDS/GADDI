@@ -85,7 +85,10 @@ public class Graph {
 	        int source = in.nextInt();
 	        int target = in.nextInt();
 	        GraphMatrix[source][target] = 1;
+	       //GraphMatrix[target][source] = 1;	        
 	        GraphShortestMatrix[source][target] = GraphMatrix[source][target];
+	       //GraphShortestMatrix[target][source] = GraphMatrix[target][source];
+	        
 	    }
 	    
 	    in.close();

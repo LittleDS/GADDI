@@ -36,10 +36,10 @@ class GraphStatistic {
             for ( int j = 0; j < SizeofNode; j++ ) {
                 if ( GraphMatrix[i][j] != NOEDGE ) {
                     nodesDegree[i]++;
-                    if (!neighborCntMatrix.get(i).containsKey(NodeLabel[i]))
-                    	neighborCntMatrix.get(i).put(NodeLabel[i], 1);
+                    if (!neighborCntMatrix.get(i).containsKey(NodeLabel[j]))
+                    	neighborCntMatrix.get(i).put(NodeLabel[j], 1);
                     else {
-                    	neighborCntMatrix.get(i).put(NodeLabel[i], neighborCntMatrix.get(i).get(NodeLabel[i]) + 1);
+                    	neighborCntMatrix.get(i).put(NodeLabel[j], neighborCntMatrix.get(i).get(NodeLabel[j]) + 1);
                     }                    	
                 }
             }
@@ -71,7 +71,9 @@ class GraphStatistic {
         neighborCntMatrix = new ArrayList<HashMap<String, Integer>>(SizeofNode);
         
         for ( int i = 0; i < SizeofNode; i++ ) {
-            
+        	
+        	neighborCntMatrix.add(new HashMap<String, Integer>());
+        	
         	maxShortestDistances[i] = 0;
             
             nodesDegree[i] = 0;
