@@ -7,6 +7,7 @@ public class Graph {
 	int NOEDGE = 121234;
 
     int SizeofNode;
+    int SizeofEdges;
     int[][] GraphMatrix;    
     int[][] GraphShortestMatrix;
     boolean isRdFromFile;
@@ -113,6 +114,7 @@ public class Graph {
 	    isRdFromFile = false;
 	    
 	    SizeofNode = in.nextInt();
+	    SizeofEdges = 0;
 	    
 	    NodeLabel = new String[SizeofNode];
 	    GraphMatrix = new int[SizeofNode][SizeofNode];
@@ -133,6 +135,7 @@ public class Graph {
 	        int target = in.nextInt();
 	        GraphMatrix[source][target] = 1;
 	        GraphShortestMatrix[source][target] = GraphMatrix[source][target];
+	        SizeofEdges++;
 	    }
 	    
 	    in.close();

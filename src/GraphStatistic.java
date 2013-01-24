@@ -24,8 +24,6 @@ class GraphStatistic {
     
     String[] NodeLabel;
     
-    int longestShortestDistance;
-
     ArrayList<HashMap<String, Integer>> neighborCntMatrix;
 
     /**
@@ -50,9 +48,7 @@ class GraphStatistic {
         K = _K;
         
         mpGraph = pGraph;
-        
-        longestShortestDistance = 0;
-        
+              
         SizeofNode = mpGraph.SizeofNode;
         
         NodeLabel = mpGraph.NodeLabel;
@@ -87,23 +83,8 @@ class GraphStatistic {
             }
         }
         
-        shortestPathCalculate();
         ndsCalculate();
         getDegreeNeighborLabelCnt();
-    }
-
-    void shortestPathCalculate() {
-        for ( int i = 0; i < SizeofNode; i++ ) {
-            for ( int j = 0; j < SizeofNode; j++ ) {
-                if ( UNLMTINT != GraphShortestMatrix[i][j]
-                   && maxShortestDistances[i] < GraphShortestMatrix[i][j] ) {
-                    maxShortestDistances[i] = GraphShortestMatrix[i][j];
-                }
-            }
-            if ( longestShortestDistance < maxShortestDistances[i] ) {
-                longestShortestDistance = maxShortestDistances[i];
-            }
-        }
     }
     
     void ndsCalculate() {

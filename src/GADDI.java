@@ -21,11 +21,8 @@ public class GADDI {
 
     HashSet<HashMap<Integer, Integer>> mMatchSet;
     HashMap<Integer, Integer> mCurMatch;
-    
-    HashMap<Integer, HashSet<Integer>> mDelMap;
-    HashSet<Integer> mDelSet;
-    
-    HashSet<Integer> mCandSet;
+       
+    HashSet<Integer> mgCandSet;
     ArrayList<HashSet<Integer>> mTrueList;
     ArrayList<HashSet<Integer>> mFalseList;
     
@@ -49,24 +46,19 @@ public class GADDI {
 	    
 	    mMatchSet = new HashSet<HashMap<Integer, Integer>>();
 	    mCurMatch = new HashMap<Integer, Integer>();
-	    
-	    mDelMap = new HashMap<Integer, HashSet<Integer>>();
-	    mDelSet = new HashSet<Integer>();
-	    
+	     
 	    dfsQgraphNodes = new int[mpqSt.SizeofNode];
 	    L = _L;
 	    
-	    mCandSet = new HashSet<Integer>();
+	    mgCandSet = new HashSet<Integer>();
 	    
-	    //dfsSearchQgraph();
-	    for (int i = 0; i < mpqSt.SizeofNode; i++)
-	    	dfsQgraphNodes[i] = i;
+	    dfsSearchQgraph();
 	    
 	    for ( int i = 0; i < mpdbSt.SizeofNode; i++ ) {
-	        mCandSet.add(i);
+	        mgCandSet.add(i);
 	    }
 	    
-	    dynamicMatching( 0 );
+	    dynamicMatching(0, mgCandSet);
 	    	    
 	    Iterator<HashMap<Integer, Integer>>  it = mMatchSet.iterator();
 	    
@@ -82,71 +74,78 @@ public class GADDI {
 	}
 
 	void dfsSearchQgraph() {
-	    int nodeIdx = 1;
-	    int currentNode = 0;
-	    boolean isNewNodeAdded = false;
-	    dfsQgraphNodes[0] = 0;
-	    
-	    int[][] qGraphMatrix = new int[mpqSt.SizeofNode][];
-	    for ( int i = 0; i < mpqSt.SizeofNode; i++ ) {
-	        qGraphMatrix[i] = new int [mpqSt.SizeofNode];
-	        for ( int j = 0; j < mpqSt.SizeofNode; j++ ) {
-	            qGraphMatrix[i][j] = mpqSt.GraphMatrix[i][j];
-	        }
-	    }
-	    
-	    HashSet<Integer> alreadySearched = new HashSet<Integer>();
-	    HashSet<Integer> toBeSearched = new HashSet<Integer>();
-	    LinkedList<Integer> currentPath = new LinkedList<Integer>();
-	    
-	    for ( int i = 1; i < mpqSt.SizeofNode; i++ ) {
-	        toBeSearched.add(i);
-	    }
-	    
-	    alreadySearched.add(0);    
-	    currentPath.add(0);
-	    
-	    while ( false == toBeSearched.isEmpty() ) {
-	        if ( true == currentPath.isEmpty() ) {
-	            Iterator<Integer> it = toBeSearched.iterator();
-	            Integer t = it.next();
-	            it.remove();
-	            alreadySearched.add(t);
-	            currentNode = t;
-	            currentPath.add(currentNode);
-	        } else {
-	            currentNode = currentPath.getLast();
-	        }
-	        
-	        isNewNodeAdded = false;
-	        
-	        for ( int i = 0; i < mpqSt.SizeofNode; i++ ) {
-	            if ( NOEDGE != qGraphMatrix[currentNode][i] ) {
-	                qGraphMatrix[currentNode][i] = NOEDGE;
-	                if ( toBeSearched.contains(i)) {
-	                    toBeSearched.remove(i);
-	                    alreadySearched.add(i);
-	                    currentPath.add(i);
-	                    isNewNodeAdded = true;
-	                    dfsQgraphNodes[nodeIdx++]=i;
-	                    break;
-	                }
-	            }
-	        }
-	        
-	        if ( false == isNewNodeAdded ) {
-	            currentPath.remove(currentPath.getLast());
-	        }
-	    }
-	}
+		int nodeIdx = 1;
+		int currentNode = 0;
+		boolean isNewNodeAdded = false;
+		dfsQgraphNodes[0] = 0;
 
-	void shrinkCand( int qIdx, int dbIdx) {
+		int[][] qGraphMatrix = new int[mpqSt.SizeofNode][mpqSt.SizeofNode];
+		
+		for ( int i = 0; i < mpqSt.SizeofNode; i++ ) {
+			for ( int j = 0; j < mpqSt.SizeofNode; j++ ) {
+				qGraphMatrix[i][j] = mpqSt.GraphMatrix[i][j];
+			}
+		}
+
+		for ( int i = 0; i < mpqSt.SizeofNode; i++ ) {
+			for ( int j = 0; j < mpqSt.SizeofNode; j++ ) {
+				if (qGraphMatrix[i][j] != NOEDGE)
+					 qGraphMatrix[j][i] = qGraphMatrix[i][j];
+			}
+		}
+		
+		HashSet<Integer> alreadySearched = new HashSet<Integer>();
+		HashSet<Integer> toBeSearched = new HashSet<Integer>();
+		LinkedList<Integer> currentPath = new LinkedList<Integer>();
+
+		for ( int i = 1; i < mpqSt.SizeofNode; i++ ) {
+			toBeSearched.add(i);
+		}
+
+		alreadySearched.add(0);
+		currentPath.add(0);
+
+		while ( false == toBeSearched.isEmpty() ) {
+			if ( true == currentPath.isEmpty() ) {
+				Iterator<Integer> it = toBeSearched.iterator();
+				Integer t = it.next();
+				it.remove();
+				alreadySearched.add(t);
+				currentNode = t;
+				currentPath.add(currentNode);
+			} 
+			else {
+				currentNode = currentPath.getLast();
+			}
+
+			isNewNodeAdded = false;
+
+			for ( int i = 0; i < mpqSt.SizeofNode; i++ ) {
+				if ( NOEDGE != qGraphMatrix[currentNode][i] ) {
+					qGraphMatrix[currentNode][i] = NOEDGE;
+					if ( toBeSearched.contains(i)) {
+						toBeSearched.remove(i);
+						alreadySearched.add(i);
+						currentPath.add(i);
+						isNewNodeAdded = true;
+						dfsQgraphNodes[nodeIdx++]=i;
+						break;
+					}
+				}
+			}
+
+			if ( false == isNewNodeAdded ) {
+				currentPath.remove(currentPath.getLast());
+			}
+		}
+	}
+	
+	void shrinkCand( int qIdx, int dbIdx, HashSet<Integer> mCandSet) {
 	    HashMap<String, List<Integer>> qNDSmap = new HashMap<String ,List<Integer>>();
 	    String label = "";
 	    int cnt = 0;
 	    boolean isObserv2Satisfied = false;
 
-	    mDelSet.add(dbIdx);
 	    mCandSet.remove(dbIdx);
 	        
 	    for ( int i = 0; i < mpqSt.SizeofNode; i++ ) {
@@ -159,7 +158,7 @@ public class GADDI {
             	qNDSmap.get(label).add(cnt);
 	        }
 	    }
-	    
+
 	    for ( int i = 0; i < mpdbSt.SizeofNode; i++ ) {
 	        if ( L >= mpdbSt.GraphShortestMatrix[dbIdx][i] ) {
 	            isObserv2Satisfied = false;
@@ -176,7 +175,6 @@ public class GADDI {
 	            
 	            if ( false == isObserv2Satisfied ) {
 	                mCandSet.remove(i);
-	                mDelSet.add(i);
 	            }
 	        }
 	    }
@@ -213,6 +211,10 @@ public class GADDI {
 	             NOEDGE == mpdbSt.GraphMatrix[mCurMatch.get(first)][dbIdx] ) {
 	            return false;
 	        }
+	        if ( NOEDGE != mpqSt.GraphMatrix[qIdx][first] && 
+		             NOEDGE == mpdbSt.GraphMatrix[dbIdx][mCurMatch.get(first)] ) {
+		            return false;
+		        }
 	    }
 	    
 	    for (String s : mpqSt.neighborCntMatrix.get(qIdx).keySet()) {
@@ -297,28 +299,24 @@ public class GADDI {
 	    return true;
 	}
 
-	void dynamicMatching(int i) {
+	void dynamicMatching(int i, HashSet<Integer> mCand) {
 	    int lastMatchDb = -1;
 
-	    if ( i == mpqSt.SizeofNode ) {
-	        mMatchSet.add(mCurMatch);
+	    if ( i == mpqSt.SizeofNode) {
+	    	HashMap<Integer, Integer> matchCopy = new HashMap<Integer, Integer>();
+	    	matchCopy.putAll(mCurMatch);
+	        
+	    	mMatchSet.add(matchCopy);
 	        
 	        int lastMatchQ = dfsQgraphNodes[i - 1];
-	        
-	        mDelSet.clear();
-	        
-	        mDelSet = mDelMap.get(lastMatchQ);
-	        
-	        mCandSet.addAll(mDelSet);
-	        
-	        mDelSet.clear();
-	        mDelMap.remove(lastMatchQ);
+
 	        mCurMatch.remove(lastMatchQ);
+
 	        return;
 	    }
 
 	    int qIdx = dfsQgraphNodes[i];
-	    Iterator<Integer> it = mCandSet.iterator();
+	    Iterator<Integer> it = mCand.iterator();
 	    
 	    while ( it.hasNext() ) {
 	    	Integer value = it.next();
@@ -330,16 +328,13 @@ public class GADDI {
 	            if ( true == isInTrueList ( qIdx, value ) ) {
 	                addMatch(qIdx, value );
 	                lastMatchDb = value;
-	                shrinkCand(qIdx, value);
+
+	                HashSet<Integer> tempCand = new HashSet<Integer>();
+	                tempCand.addAll(mCand);
 	                
-	                HashSet<Integer> tempCopy = new HashSet<Integer>();
-	                for (Integer j : mDelSet)
-	                	tempCopy.add(j);
-	                
-	                mDelMap.put(qIdx, tempCopy);
-	                mDelSet.clear();
-	                
-	                dynamicMatching(i + 1);
+	                shrinkCand(qIdx, value, tempCand);
+	                	                
+	                dynamicMatching(i + 1, tempCand);
 	                
 	                continue;
 	            }
@@ -350,19 +345,16 @@ public class GADDI {
 	            
 	                addToTrueList(qIdx, value);
 	                
-	                shrinkCand(qIdx, value);
+	                HashSet<Integer> tempCand = new HashSet<Integer>();
+	                tempCand.addAll(mCand);
 	                
-	                HashSet<Integer> tempCopy = new HashSet<Integer>();
-	                for (Integer j : mDelSet)
-	                	tempCopy.add(j);
-	                
-	                mDelMap.put(qIdx, tempCopy);
-	                mDelSet.clear();
-	                
-	                dynamicMatching(i + 1);
+	                shrinkCand(qIdx, value, tempCand);
+	                	                
+	                dynamicMatching(i + 1, tempCand);
 	                
 	                continue;
-	            } else {	            
+	            } 
+	            else {	            
 	                addToFalseList(qIdx, value);
 	            }
 	        } 
@@ -370,16 +362,6 @@ public class GADDI {
 	    
 	    if ( 0 != i ) {
 	        int lastMatchQ = dfsQgraphNodes[i - 1];
-	        
-	        mDelSet.clear();
-	        
-	        mDelSet = mDelMap.get(lastMatchQ);
-
-            mCandSet.addAll(mDelSet);
-	        
-	        mDelSet.clear();
-	        
-	        mDelMap.remove(lastMatchQ);
 	        
 	        mCurMatch.remove(lastMatchQ);
 	    }
