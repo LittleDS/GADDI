@@ -1,8 +1,17 @@
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Graph {
+	public static void main(String[] args) throws IOException {
+		Graph t = new Graph("P2PGADDI");
+		System.out.println("Start I/O");
+		t.outputShortestPath("P2PShortestPath");
+	}
+	
 	int UNLMTINT = 0x3fffffff; 
 	int NOEDGE = 121234;
 
@@ -39,6 +48,19 @@ public class Graph {
 	    }
 	}
 
+	public void outputShortestPath(String fileName) throws IOException {
+		FileWriter fstream = new FileWriter(fileName);
+		BufferedWriter out = new BufferedWriter(fstream);
+
+		for (int i = 0; i < SizeofNode; i++) {
+			for (int j = 0; j < SizeofNode; j++)
+				out.write(GraphShortestMatrix[i][j] + " ");			
+			out.write("\r\n");
+		}
+
+		//don't forget to close the stream
+		out.close();		
+	}
 	/**
 	 * Read the index from file
 	 * @param fileName
@@ -69,8 +91,8 @@ public class Graph {
 	    SizeofNode = in.nextInt();
 	    
 	    NodeLabel = new String[SizeofNode];
+	    GraphShortestMatrix = new int[SizeofNode][SizeofNode];	    
 	    GraphMatrix = new int[SizeofNode][SizeofNode];
-	    GraphShortestMatrix = new int[SizeofNode][SizeofNode];
 	    
 	    for(int j = 0; j < SizeofNode; j++) {
 	        int t = in.nextInt();

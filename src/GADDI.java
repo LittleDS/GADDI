@@ -8,13 +8,30 @@ import java.util.List;
 
 
 public class GADDI {
-	public static void main(String[] args) throws FileNotFoundException {
-	    Graph pdbGraph = new Graph("db");
-	    GraphStatistic dbGraphStatistic = new GraphStatistic(pdbGraph, 2);
-	    Graph qGraph = new Graph("query");
-	    GraphStatistic qGraphStatistic = new GraphStatistic(qGraph, 2);
-	    GADDI gaddi = new GADDI(dbGraphStatistic, qGraphStatistic, 3);
-	}
+//	public static void main(String[] args) throws FileNotFoundException {
+//	    Graph pdbGraph = new Graph("db");
+//	    GraphStatistic dbGraphStatistic = new GraphStatistic(pdbGraph, 2);
+//	    Graph qGraph = new Graph("query");
+//	    
+//	    long startTime = System.nanoTime();
+//	    GraphStatistic qGraphStatistic = new GraphStatistic(qGraph, 2);
+//	    GADDI gaddi = new GADDI(dbGraphStatistic, qGraphStatistic, 3);
+//	    long endTime = System.nanoTime();
+//	    long duration = endTime - startTime;
+//	    
+//	    Iterator<HashMap<Integer, Integer>>  it = gaddi.mMatchSet.iterator();
+//	    
+//	    HashMap<Integer, Integer> tempMap;
+//	    int i = 1;
+//	    while (it.hasNext()) {
+//	        System.out.println("Match " + i++);
+//	        tempMap = it.next();
+//	        for (Integer first : tempMap.keySet()) {
+//	            System.out.println("qIdx: " + first + " dbIdx: " + tempMap.get(first));
+//	        }
+//	    }
+//	    System.out.println(duration + " ns");
+//	}
 	
 	int UNLMTINT = 0x3fffffff; 
 	int NOEDGE = 121234;	    
@@ -60,17 +77,7 @@ public class GADDI {
 	    
 	    dynamicMatching(0, mgCandSet);
 	    	    
-	    Iterator<HashMap<Integer, Integer>>  it = mMatchSet.iterator();
-	    
-	    HashMap<Integer, Integer> tempMap;
-	    int i = 1;
-	    while (it.hasNext()) {
-	        System.out.println("Match " + i++);
-	        tempMap = it.next();
-	        for (Integer first : tempMap.keySet()) {
-	            System.out.println("qIdx: " + first + " dbIdx: " + tempMap.get(first));
-	        }
-	    }
+
 	}
 
 	void dfsSearchQgraph() {

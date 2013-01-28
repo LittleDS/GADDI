@@ -1,5 +1,11 @@
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 class GraphStatistic {
 	int UNLMTINT = 0x3fffffff; 
@@ -29,7 +35,7 @@ class GraphStatistic {
     /**
      * Count the degree and label
      */
-    void getDegreeNeighborLabelCnt() {
+    public void getDegreeNeighborLabelCnt() {
         for ( int i = 0; i < SizeofNode; i++ ) {
             for ( int j = 0; j < SizeofNode; j++ ) {
                 if ( GraphMatrix[i][j] != NOEDGE ) {
@@ -86,8 +92,51 @@ class GraphStatistic {
         ndsCalculate();
         getDegreeNeighborLabelCnt();
     }
+
+    public GraphStatistic(Graph pGraph, int _K, String NDS) throws FileNotFoundException {
+        K = _K;
+        
+        mpGraph = pGraph;
+              
+        SizeofNode = mpGraph.SizeofNode;
+        
+        NodeLabel = mpGraph.NodeLabel;
+        
+        GraphMatrix = mpGraph.GraphMatrix;
+
+        GraphShortestMatrix = mpGraph.GraphShortestMatrix;
+
+        ndsMatrixTri = new int[SizeofNode][];
+        ndsMatrixRect = new int[SizeofNode][];
+        
+        nodesDegree = new int [SizeofNode];
+        
+        maxShortestDistances = new int [SizeofNode];
+        
+        neighborCntMatrix = new ArrayList<HashMap<String, Integer>>(SizeofNode);
+        
+        for ( int i = 0; i < SizeofNode; i++ ) {
+        	
+        	neighborCntMatrix.add(new HashMap<String, Integer>());
+        	
+        	maxShortestDistances[i] = 0;
+            
+            nodesDegree[i] = 0;
+            
+            ndsMatrixTri[i] = new int[SizeofNode];
+            ndsMatrixRect[i] = new int[SizeofNode];
+            
+            for ( int j = 0; j < SizeofNode; j++ ) {
+                ndsMatrixTri[i][j] = 0;
+                ndsMatrixRect[i][j] = 0;
+            }
+        }
+        
+        readNDSFromFile(NDS);
+        getDegreeNeighborLabelCnt();
+    }
     
-    void ndsCalculate() {
+    public void ndsCalculate() {
         int[] pNode = new int[2];
         for ( int i = 0; i < SizeofNode; i++ ) {
             for ( int j = 0; j < SizeofNode; j++ ) {
@@ -105,6 +154,32 @@ class GraphStatistic {
                 }
             }
         }
+    }
+    
+    
+    public void outputNDS(String fileName) throws IOException {
+		FileWriter fstream = new FileWriter(fileName);
+		BufferedWriter out = new BufferedWriter(fstream);
+
+		for (int i = 0; i < SizeofNode; i++) {
+			for (int j = 0; j < SizeofNode; j++)
+				out.write(ndsMatrixTri[i][j] + " ");			
+			out.write("\r\n");
+		}
+
+		//don't forget to close the stream
+		out.close();    	
+    }
+    
+    public void readNDSFromFile(String fileName) throws FileNotFoundException {
+		File input = new File(fileName);
+		Scanner in = new Scanner(input);
+	    for ( int i = 0; i < SizeofNode; i++ ) {
+	        for ( int j = 0; j < SizeofNode; j++ ) {
+	        	ndsMatrixTri[i][j] = in.nextInt();
+	        }	 
+	    }
+	    in.close();    	
     }
 }
 
